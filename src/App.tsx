@@ -101,6 +101,7 @@ export default function App() {
   const handleGenerateSkills = async () => {
     setIsGeneratingSkills(true);
     setGeneratedSkills([]);
+    setSelectedSkills([]);
     try {
       setGeneratedSkills(await generateLearningSkills(selectedLevel as string, learningContext));
     } catch (e) { console.error(e); }
@@ -202,8 +203,8 @@ export default function App() {
       <div className="max-w-5xl mx-auto px-4 md:px-6 pb-8">
 
         {/* Stepper */}
-        <div className="flex justify-center mb-8 overflow-x-auto pb-2">
-          <div className="flex items-center gap-1">
+        <div className="flex justify-center mb-8 overflow-x-auto py-2">
+          <div className="flex items-center gap-1 overflow-visible">
             {visibleSteps.map((s, i) => {
               const isActive    = displayStep === i + 1;
               const isCompleted = displayStep > i + 1;
@@ -444,14 +445,14 @@ export default function App() {
                     </h2>
                     <span className={cn(
                       'text-sm font-semibold px-3 py-1 rounded-full',
-                      selectedSkills.length === 3
+                      selectedSkills.length >= 2
                         ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                         : 'bg-[#F2F4F8] text-[#9BA8C4]'
                     )}>
                       {selectedSkills.length}/3
                     </span>
                   </div>
-                  <p className="text-sm text-[#9BA8C4] mb-6">เลือก <strong className="text-[#0F1117]">3 ทักษะ</strong> จากที่ AI แนะนำ แล้วกำหนดระดับที่คาดหวัง</p>
+                  <p className="text-sm text-[#9BA8C4] mb-6">เลือก <strong className="text-[#0F1117]">2–3 ทักษะ</strong> จากที่ AI แนะนำ แล้วกำหนดระดับที่คาดหวัง</p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
                     {generatedSkills.map((skill, i) => {
@@ -515,7 +516,7 @@ export default function App() {
                     </div>
                   )}
 
-                  {selectedSkills.length === 3 && selectedSkills.some(s => !s.level) && (
+                  {selectedSkills.length >= 2 && selectedSkills.some(s => !s.level) && (
                     <div className="flex items-center gap-2 mb-4 px-4 py-3 bg-amber-50 border border-amber-100 rounded-xl">
                       <AlertCircle size={14} className="text-amber-500 shrink-0" />
                       <p className="text-xs text-amber-700">กรุณากำหนดระดับที่คาดหวังให้ครบทุกทักษะ</p>
@@ -524,7 +525,7 @@ export default function App() {
 
                   <div className="flex justify-between">
                     <GhostButton onClick={prevStep}><ChevronLeft size={16} /> ย้อนกลับ</GhostButton>
-                    <PrimaryButton onClick={nextStep} disabled={selectedSkills.length < 3 || selectedSkills.some(s => !s.level)}>
+                    <PrimaryButton onClick={nextStep} disabled={selectedSkills.length < 2 || selectedSkills.some(s => !s.level)}>
                       ดูสรุปรวม <ChevronRight size={16} />
                     </PrimaryButton>
                   </div>
