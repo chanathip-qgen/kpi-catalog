@@ -200,7 +200,7 @@ export default function App() {
         <p className="text-[#9BA8C4] text-sm">ระบบสร้างใบประเมิน KPI — Behavior & Learning</p>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 md:px-6 pb-8">
+      <div className={cn('mx-auto px-4 md:px-6 pb-8', step === 8 ? 'max-w-screen-xl' : 'max-w-5xl')}>
 
         {/* Stepper */}
         <div className="flex justify-center mb-8 overflow-x-auto py-2">
@@ -445,46 +445,63 @@ export default function App() {
                     </h2>
                     <span className={cn(
                       'text-sm font-semibold px-3 py-1 rounded-full',
-                      selectedSkills.length >= 2
+                      selectedSkills.length >= 1
                         ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                         : 'bg-[#F2F4F8] text-[#9BA8C4]'
                     )}>
                       {selectedSkills.length}/3
                     </span>
                   </div>
-                  <p className="text-sm text-[#9BA8C4] mb-6">เลือก <strong className="text-[#0F1117]">2–3 ทักษะ</strong> จากที่ AI แนะนำ แล้วกำหนดระดับที่คาดหวัง</p>
+                  <p className="text-sm text-[#9BA8C4] mb-6">เลือก <strong className="text-[#0F1117]">1–3 ทักษะ</strong> จากที่ AI แนะนำ แล้วกำหนดระดับที่คาดหวัง</p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-                    {generatedSkills.map((skill, i) => {
-                      const isSelected = selectedSkills.some(s => s.skill.skill_name === skill.skill_name);
-                      const isDisabled = !isSelected && selectedSkills.length >= 3;
-                      return (
-                        <div key={i} onClick={() => !isDisabled && toggleSkillSelection(skill)}
-                          className={cn(
-                            'p-4 rounded-xl border-2 transition-all cursor-pointer',
-                            isSelected  ? 'border-[#3B5BDB] bg-[#EEF2FF]/60' :
-                            isDisabled  ? 'border-[#E8EAF0] bg-[#F8F9FC] opacity-40 cursor-not-allowed' :
-                            'border-[#E8EAF0] bg-white hover:border-[#C5CBE0]'
+                  {(['Technical', 'Soft Skill'] as const).map(type => {
+                    const skills = generatedSkills.filter(s => s.skill_type === type);
+                    return (
+                      <div key={type} className="mb-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className={cn(
+                            'text-xs font-bold px-3 py-1 rounded-full',
+                            type === 'Technical'
+                              ? 'bg-violet-50 text-violet-600 border border-violet-100'
+                              : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                           )}>
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1">
-                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#EEF2FF] text-[#3B5BDB] mb-2 inline-block">
-                                {skill.skill_category}
-                              </span>
-                              <div className="font-semibold text-[#0F1117] text-sm mb-1">{skill.skill_name}</div>
-                              <div className="text-xs text-[#9BA8C4]">{skill.relevance}</div>
-                            </div>
-                            <div className={cn(
-                              'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-1',
-                              isSelected ? 'border-[#3B5BDB] bg-[#3B5BDB]' : 'border-[#CDD2E0]'
-                            )}>
-                              {isSelected && <Check size={10} className="text-white" strokeWidth={3} />}
-                            </div>
-                          </div>
+                            {type === 'Technical' ? '⚙️ Technical Skill' : '💬 Soft Skill'} ({skills.length})
+                          </span>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {skills.map((skill, i) => {
+                            const isSelected = selectedSkills.some(s => s.skill.skill_name === skill.skill_name);
+                            const isDisabled = !isSelected && selectedSkills.length >= 3;
+                            return (
+                              <div key={i} onClick={() => !isDisabled && toggleSkillSelection(skill)}
+                                className={cn(
+                                  'p-4 rounded-xl border-2 transition-all cursor-pointer',
+                                  isSelected  ? 'border-[#3B5BDB] bg-[#EEF2FF]/60' :
+                                  isDisabled  ? 'border-[#E8EAF0] bg-[#F8F9FC] opacity-40 cursor-not-allowed' :
+                                  'border-[#E8EAF0] bg-white hover:border-[#C5CBE0]'
+                                )}>
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="flex-1">
+                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#EEF2FF] text-[#3B5BDB] mb-2 inline-block">
+                                      {skill.skill_category}
+                                    </span>
+                                    <div className="font-semibold text-[#0F1117] text-sm mb-1">{skill.skill_name}</div>
+                                    <div className="text-xs text-[#9BA8C4]">{skill.relevance}</div>
+                                  </div>
+                                  <div className={cn(
+                                    'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-1',
+                                    isSelected ? 'border-[#3B5BDB] bg-[#3B5BDB]' : 'border-[#CDD2E0]'
+                                  )}>
+                                    {isSelected && <Check size={10} className="text-white" strokeWidth={3} />}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
 
                   {selectedSkills.length > 0 && (
                     <div className="space-y-3 mb-8">
@@ -516,7 +533,7 @@ export default function App() {
                     </div>
                   )}
 
-                  {selectedSkills.length >= 2 && selectedSkills.some(s => !s.level) && (
+                  {selectedSkills.length >= 1 && selectedSkills.some(s => !s.level) && (
                     <div className="flex items-center gap-2 mb-4 px-4 py-3 bg-amber-50 border border-amber-100 rounded-xl">
                       <AlertCircle size={14} className="text-amber-500 shrink-0" />
                       <p className="text-xs text-amber-700">กรุณากำหนดระดับที่คาดหวังให้ครบทุกทักษะ</p>
@@ -525,7 +542,7 @@ export default function App() {
 
                   <div className="flex justify-between">
                     <GhostButton onClick={prevStep}><ChevronLeft size={16} /> ย้อนกลับ</GhostButton>
-                    <PrimaryButton onClick={nextStep} disabled={selectedSkills.length < 2 || selectedSkills.some(s => !s.level)}>
+                    <PrimaryButton onClick={nextStep} disabled={selectedSkills.length < 1 || selectedSkills.some(s => !s.level)}>
                       ดูสรุปรวม <ChevronRight size={16} />
                     </PrimaryButton>
                   </div>
@@ -535,42 +552,27 @@ export default function App() {
               {/* ── Step 8: Final Summary ─────────────────────────────────── */}
               {step === 8 && (
                 <motion.div key="s8" {...slideAnim} className="p-6 md:p-8">
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                    <div>
-                      <h2 className="text-lg font-bold text-[#0F1117] flex items-center gap-2">
-                        สรุปใบประเมิน KPI
-                      </h2>
-                      <p className="text-sm text-[#9BA8C4] mt-0.5">ระดับ: <span className="font-semibold text-[#6B7280]">{selectedLevel}</span></p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap">
-                      <button onClick={copyBehaviorKPIs}
-                        className="flex items-center gap-2 px-3 py-2 bg-[#0F1117] text-white rounded-lg text-xs font-medium hover:bg-[#1E2235] transition-colors">
-                        {copySuccess==='behavior' ? <Check size={13}/> : <Copy size={13}/>} Copy Behavior KPI
-                      </button>
-                      <button onClick={copyLearningKPIs}
-                        className="flex items-center gap-2 px-3 py-2 bg-[#3B5BDB] text-white rounded-lg text-xs font-medium hover:bg-[#3451C7] transition-colors">
-                        {copySuccess==='learning' ? <Check size={13}/> : <Copy size={13}/>} Copy Learning KPI
-                      </button>
-                      <button onClick={downloadCSV}
-                        className="flex items-center gap-2 px-3 py-2 border border-[#E8EAF0] text-[#0F1117] rounded-lg text-xs font-medium hover:bg-[#F2F4F8] transition-colors">
-                        <Download size={13} /> CSV
-                      </button>
-                    </div>
+                  <div className="mb-8">
+                    <h2 className="text-lg font-bold text-[#0F1117] flex items-center gap-2">สรุปใบประเมิน KPI</h2>
+                    <p className="text-sm text-[#9BA8C4] mt-0.5">ระดับ: <span className="font-semibold text-[#6B7280]">{selectedLevel}</span></p>
                   </div>
 
-                  {/* Behavior */}
+                  {/* Behavior KPI */}
                   <SummarySection title="Behavior KPI" count={orderedBehaviorKPIs.length} onEdit={() => setStep(2)} accent="#3B5BDB" />
-                  <div className="overflow-x-auto border border-[#E8EAF0] rounded-xl mb-6">
-                    <table className="w-full text-left min-w-[980px]">
+                  <div className="overflow-hidden border border-[#E8EAF0] rounded-xl mb-3">
+                    <table className="w-full text-left table-fixed">
                       <thead>
                         <tr className="bg-[#0F1117] text-white text-xs">
-                          <th className="px-3 py-3 font-semibold uppercase w-[20%] border-r border-white/10">KPI Name</th>
-                          <th className="px-3 py-3 font-semibold uppercase w-[14%] border-r border-white/10">Target</th>
-                          <th className="px-3 py-3 font-semibold uppercase w-[6%] text-center border-r border-white/10">Weight</th>
+                          <th className="px-2 py-2.5 font-semibold uppercase w-[22%] border-r border-white/10" rowSpan={2}>KPI Name</th>
+                          <th className="px-2 py-2.5 font-semibold uppercase w-[12%] border-r border-white/10" rowSpan={2}>Target</th>
+                          <th className="px-2 py-2.5 font-semibold uppercase w-[5%] text-center border-r border-white/10" rowSpan={2}>Wt.</th>
+                          <th colSpan={5} className="px-2 py-2.5 font-semibold uppercase text-center border-b border-white/10">Score</th>
+                          <th className="w-10" rowSpan={2} />
+                        </tr>
+                        <tr className="bg-[#0F1117] text-white/70 text-xs">
                           {['1','2','3★','4','5'].map(s => (
-                            <th key={s} className={cn('px-2 py-3 text-center font-semibold border-r border-white/10 last:border-r-0', s==='3★' && 'bg-[#3B5BDB]')}>{s}</th>
+                            <th key={s} className={cn('px-1.5 py-2 text-center font-semibold border-r border-white/10 last:border-r-0 w-[11%]', s==='3★' && 'bg-[#3B5BDB] text-white')}>{s}</th>
                           ))}
-                          <th className="w-10" />
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#F0F2F8]">
@@ -579,14 +581,14 @@ export default function App() {
                           const rt = `${k.kpi_name}\t${k.target}\t0%\t${k.score_1}\t${k.score_2}\t${k.score_3}\t${k.score_4}\t${k.score_5}`;
                           return (
                             <tr key={idx} className="hover:bg-[#FAFBFD]">
-                              <td className="px-3 py-3 text-xs border-r border-[#F0F2F8]">
+                              <td className="px-2 py-2.5 text-xs border-r border-[#F0F2F8]">
                                 <div className="text-[10px] font-bold text-[#9BA8C4] mb-0.5">[{k.type_code} — {k.dimension}]</div>
-                                <div className="font-medium text-[#0F1117]">{k.kpi_name}</div>
+                                <div className="font-medium text-[#0F1117] leading-snug">{k.kpi_name}</div>
                               </td>
-                              <td className="px-3 py-3 text-xs text-[#6B7280] border-r border-[#F0F2F8]">{k.target}</td>
-                              <td className="px-3 py-3 text-xs text-[#9BA8C4] text-center border-r border-[#F0F2F8]">0%</td>
+                              <td className="px-2 py-2.5 text-xs text-[#6B7280] border-r border-[#F0F2F8] leading-snug">{k.target}</td>
+                              <td className="px-2 py-2.5 text-xs text-[#9BA8C4] text-center border-r border-[#F0F2F8]">0%</td>
                               {[k.score_1,k.score_2,k.score_3,k.score_4,k.score_5].map((s,si) => (
-                                <td key={si} className={cn('px-2 py-3 text-xs text-[#6B7280] border-r border-[#F0F2F8] last:border-r-0', si===2 && 'bg-[#EEF2FF]/60 text-[#3B5BDB]')}>{s}</td>
+                                <td key={si} className={cn('px-1.5 py-2.5 text-[11px] text-[#6B7280] border-r border-[#F0F2F8] last:border-r-0 leading-snug', si===2 && 'bg-[#EEF2FF]/60 text-[#3B5BDB]')}>{s}</td>
                               ))}
                               <td className="px-2 py-3">
                                 <button onClick={() => copyToClipboard(rt, rk)} className="p-1 text-[#CDD2E0] hover:text-[#6B7280] transition-colors">
@@ -599,10 +601,20 @@ export default function App() {
                       </tbody>
                     </table>
                   </div>
+                  <div className="flex gap-2 justify-end mb-8">
+                    <button onClick={copyBehaviorKPIs}
+                      className="flex items-center gap-2 px-3 py-2 bg-[#0F1117] text-white rounded-lg text-xs font-medium hover:bg-[#1E2235] transition-colors">
+                      {copySuccess==='behavior' ? <Check size={13}/> : <Copy size={13}/>} Copy Behavior KPI
+                    </button>
+                    <button onClick={downloadCSV}
+                      className="flex items-center gap-2 px-3 py-2 border border-[#E8EAF0] text-[#0F1117] rounded-lg text-xs font-medium hover:bg-[#F2F4F8] transition-colors">
+                      <Download size={13} /> Download CSV
+                    </button>
+                  </div>
 
-                  {/* Learning */}
+                  {/* Learning KPI */}
                   <SummarySection title="Learning KPI" count={selectedSkills.length} onEdit={() => setStep(7)} accent="#3B5BDB" indigo />
-                  <div className="overflow-x-auto border border-[#E8EAF0] rounded-xl mb-8">
+                  <div className="overflow-x-auto border border-[#E8EAF0] rounded-xl mb-3">
                     <table className="w-full text-left min-w-[700px]">
                       <thead>
                         <tr className="bg-[#3B5BDB] text-white text-xs">
@@ -620,11 +632,14 @@ export default function App() {
                           const rt = `${s.skill.skill_name}\t${s.level}`;
                           return (
                             <tr key={idx} className="hover:bg-[#FAFBFD]">
-                              <td className="px-3 py-3 text-xs font-medium text-[#0F1117] border-r border-[#F0F2F8]">{s.skill.skill_name}</td>
+                              <td className="px-3 py-3 text-xs font-medium text-[#0F1117] border-r border-[#F0F2F8]">
+                                <div className="text-[10px] font-semibold text-[#9BA8C4] mb-0.5">{s.skill.skill_type}</div>
+                                {s.skill.skill_name}
+                              </td>
                               <td className="px-3 py-3 text-xs font-bold text-[#3B5BDB] border-r border-[#F0F2F8]">{s.level}</td>
                               <td className="px-3 py-3 text-xs text-[#9BA8C4] text-center border-r border-[#F0F2F8]">ทำได้ต่ำกว่าความคาดหวัง</td>
                               <td className="px-3 py-3 text-xs text-[#9BA8C4] text-center border-r border-[#F0F2F8]">ทำได้บางส่วน ยังไม่ถึงระดับที่คาดหวัง</td>
-                              <td className="px-3 py-3 text-xs text-[#9BA8C4] bg-[#EEF2FF]/40">ทำได้ตามที่คาดหวัง หรือเกินกว่า</td>
+                              <td className="px-3 py-3 text-xs text-[#9BA8C4] text-center bg-[#EEF2FF]/40">ทำได้ตามที่คาดหวัง หรือเกินกว่า</td>
                               <td className="px-2 py-3">
                                 <button onClick={() => copyToClipboard(rt, rk)} className="p-1 text-[#CDD2E0] hover:text-[#6B7280] transition-colors">
                                   {copySuccess===rk ? <Check size={13} className="text-emerald-500"/> : <Copy size={13}/>}
@@ -635,6 +650,16 @@ export default function App() {
                         })}
                       </tbody>
                     </table>
+                  </div>
+                  <div className="flex gap-2 justify-end mb-8">
+                    <button onClick={copyLearningKPIs}
+                      className="flex items-center gap-2 px-3 py-2 bg-[#3B5BDB] text-white rounded-lg text-xs font-medium hover:bg-[#3451C7] transition-colors">
+                      {copySuccess==='learning' ? <Check size={13}/> : <Copy size={13}/>} Copy Learning KPI
+                    </button>
+                    <button onClick={downloadCSV}
+                      className="flex items-center gap-2 px-3 py-2 border border-[#E8EAF0] text-[#0F1117] rounded-lg text-xs font-medium hover:bg-[#F2F4F8] transition-colors">
+                      <Download size={13} /> Download CSV
+                    </button>
                   </div>
 
                   <GhostButton onClick={prevStep}><ChevronLeft size={16} /> ย้อนกลับ</GhostButton>

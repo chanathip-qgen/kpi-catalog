@@ -31,8 +31,11 @@ app.post('/api/generate-skills', async (req, res) => {
     - ปัญหาหรือ Gap ที่เจอ: ${context?.problems || 'ไม่ระบุ'}
     - ทักษะที่อยากพัฒนา: ${context?.skillsNeeded || 'ไม่ระบุ'}
 
-    จงแนะนำ 5-7 ทักษะที่เหมาะสมที่สุด โดยพิจารณาจากระดับพนักงาน ปัญหาที่เจอ และความต้องการที่ระบุมา
+    จงแนะนำทักษะทั้งหมด 10 ทักษะ แบ่งเป็น 2 กลุ่มเท่าๆ กัน คือ
+    - Technical Skill จำนวน 5 ทักษะ (skill_type = "Technical")
+    - Soft Skill จำนวน 5 ทักษะ (skill_type = "Soft Skill")
 
+    พิจารณาจากระดับพนักงาน ปัญหาที่เจอ และความต้องการที่ระบุมา
     เขียนเป็นภาษาไทยทั้งหมด
     `;
 
@@ -47,11 +50,12 @@ app.post('/api/generate-skills', async (req, res) => {
             type: Type.OBJECT,
             properties: {
               skill_name: { type: Type.STRING, description: 'ชื่อทักษะที่ควรพัฒนา (กระชับ ไม่เกิน 10 คำ)' },
-              skill_category: { type: Type.STRING, description: 'หมวดหมู่ เช่น Technical, Soft Skill, Leadership, Communication, Data & Analytics' },
+              skill_type: { type: Type.STRING, description: 'ประเภทของทักษะ ต้องเป็น "Technical" หรือ "Soft Skill" เท่านั้น' },
+              skill_category: { type: Type.STRING, description: 'หมวดหมู่ย่อย เช่น Data & Analytics, Communication, Leadership, Project Management' },
               description: { type: Type.STRING, description: 'อธิบายว่าทักษะนี้คืออะไร ใน 1-2 ประโยค' },
               relevance: { type: Type.STRING, description: 'ทำไมทักษะนี้จึงเหมาะกับตำแหน่งและบริบทของพนักงานคนนี้ ใน 1-2 ประโยค' },
             },
-            required: ['skill_name', 'skill_category', 'description', 'relevance'],
+            required: ['skill_name', 'skill_type', 'skill_category', 'description', 'relevance'],
           },
         },
       },

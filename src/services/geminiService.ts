@@ -1,5 +1,6 @@
 export interface SkillSuggestion {
   skill_name: string;
+  skill_type: 'Technical' | 'Soft Skill';
   skill_category: string;
   description: string;
   relevance: string;
